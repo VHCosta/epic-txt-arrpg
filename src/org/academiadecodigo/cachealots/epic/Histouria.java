@@ -4,10 +4,13 @@ import org.academiadecodigo.bootcamp.Prompt;
 import org.academiadecodigo.bootcamp.scanners.menu.MenuInputScanner;
 import org.academiadecodigo.bootcamp.scanners.string.PasswordInputScanner;
 import org.academiadecodigo.bootcamp.scanners.string.StringInputScanner;
+import org.academiadecodigo.bootcamp.scanners.string.StringSetInputScanner;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class Histouria {
 
@@ -77,12 +80,17 @@ public class Histouria {
         StringInputScanner askUsername = new StringInputScanner();
         PasswordInputScanner askPassword = new PasswordInputScanner();
 
-        StringInputScanner askRegister = new StringInputScanner();
+        Set<String> options = new HashSet<>();
+        options.add("yes");
+        options.add("no");
+
+        StringInputScanner askRegister = new StringSetInputScanner(options);
 
 
         askUsername.setMessage("Enter your username: ");
         askPassword.setMessage("Enter your password: ");
         askRegister.setMessage("Would you like to Register? [yes/no]");
+        askRegister.setError("That's not what I asked you, you twat!\n");
 
 
         boolean loginSuccess = false;
@@ -132,12 +140,22 @@ public class Histouria {
         accounts.put(username, password);
         System.out.println("\nRegistered user: " + username + "!");
 
+        reader = new BufferedReader(new FileReader(savedAccounts));
+
+        StringBuilder tempContent = new StringBuilder();
+
+        while (reader.ready()){
+            tempContent.append(reader.readLine()).append("\n");
+        }
+
 
         writer = new BufferedWriter(new FileWriter(savedAccounts));
 
         System.out.println("\nSaving you data...\n");
 
-        writer.write(username + ":" + password + "\n");
+        writer.write(tempContent.toString());
+        writer.write(username + ":" + password);
+        writer.newLine();
         writer.flush();
         writer.close();
 
